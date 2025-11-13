@@ -1,0 +1,52 @@
+{
+  "name": "UserProgress",
+  "type": "object",
+  "properties": {
+    "comic_id": {
+      "type": "string",
+      "description": "ID of the comic"
+    },
+    "current_chapter": {
+      "type": "number",
+      "description": "Last chapter read",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "plan_to_read",
+        "reading",
+        "completed",
+        "dropped"
+      ],
+      "default": "plan_to_read",
+      "description": "Reading status"
+    },
+    "rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "User rating out of 10"
+    },
+    "is_favorite": {
+      "type": "boolean",
+      "default": false,
+      "description": "Marked as favorite"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Personal notes"
+    },
+    "started_reading": {
+      "type": "string",
+      "format": "date"
+    },
+    "completed_reading": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "comic_id"
+  ]
+}

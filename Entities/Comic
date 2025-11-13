@@ -1,0 +1,81 @@
+{
+  "name": "Comic",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the comic"
+    },
+    "description": {
+      "type": "string",
+      "description": "Synopsis/description"
+    },
+    "cover_url": {
+      "type": "string",
+      "description": "URL to cover image"
+    },
+    "author": {
+      "type": "string",
+      "description": "Author name"
+    },
+    "artist": {
+      "type": "string",
+      "description": "Artist name"
+    },
+    "total_chapters": {
+      "type": "number",
+      "description": "Total chapters available"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ongoing",
+        "completed",
+        "hiatus",
+        "cancelled"
+      ],
+      "description": "Publication status"
+    },
+    "genres": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Genres"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "manga",
+        "manwha",
+        "manhua",
+        "comic"
+      ],
+      "description": "Type of comic"
+    },
+    "release_schedule": {
+      "type": "string",
+      "description": "e.g., 'Weekly on Monday', 'Bi-weekly'"
+    },
+    "year": {
+      "type": "number",
+      "description": "Release year"
+    },
+    "mangadex_id": {
+      "type": "string",
+      "description": "MangaDex ID"
+    },
+    "external_url": {
+      "type": "string",
+      "description": "External source URL"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date",
+      "description": "Last time chapter count was updated"
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

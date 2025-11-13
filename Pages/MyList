@@ -1,0 +1,165 @@
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BookOpen, CheckCircle, Clock, XCircle, Star, TrendingUp } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { createPageUrl } from "@/utils";
+import ComicCard from "../components/browse/ComicCard";
+
+export default function MyList() {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("reading");
+
+  const { data: user } = useQuery({
+    queryKey: ['user'],
+    queryFn: () => base44.auth.me(),
+  });
+
+  const { data: userProgress = [], isLoading } = useQuery({
+    queryKey: ['userProgress'],
+    queryFn: async () => {
+      const currentUser = await base44.auth.me();
+      return base44.entities.UserProgress.filter({ created_by: currentUser.email }, '-updated_date');
+    },
+    enabled: !!user,
+  });
+
+  const { data: comics = [] } = useQuery({
+    queryKey: ['comics'],
+    queryFn: () => base44.entities.Comic.list(),
+  });
+
+  const getComicById = (id) => comics.find(m => m.id === id);
+
+  const categorizedProgress = {
+    reading: userProgress.filter(p => p.status === 'reading'),
+    plan_to_read: userProgress.filter(p => p.status === 'plan_to_read'),
+    completed: userProgress.filter(p => p.status === 'completed'),
+    dropped: userProgress.filter(p => p.status === 'dropped'),
+    favorites: userProgress.filter(p => p.is_favorite),
+  };
+
+  const tabs = [
+    { value: 'reading', label: 'Reading', icon: BookOpen, count: categorizedProgress.reading.length },
+    { value: 'plan_to_read', label: 'Plan to Read', icon: Clock, count: categorizedProgress.plan_to_read.length },
+    { value: 'completed', label: 'Completed', icon: CheckCircle, count: categorizedProgress.completed.length },
+    { value: 'dropped', label: 'Dropped', icon: XCircle, count: categorizedProgress.dropped.length },
+    { value: 'favorites', label: 'Favorites', icon: Star, count: categorizedProgress.favorites.length },
+  ];
+
+  const currentList = categorizedProgress[activeTab] || [];
+
+  const stats = {
+    totalChaptersRead: userProgress.reduce((sum, p) => sum + (p.current_chapter || 0), 0),
+    totalSeries: userProgress.length,
+    completedSeries: categorizedProgress.completed.length,
+  };
+
+  return (
+    <div className="min-h-screen p-6 md:p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header with Stats */}
+        <div className="mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 via-fuchsia-400 to-purple-300 bg-clip-text text-transparent mb-4">
+            My Collection
+          </h1>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="bg-slate-900/50 backdrop-blur rounded-2xl p-6 border border-purple-800/30 shadow-lg shadow-purple-900/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-purple-300/70 mb-1">Total Series</p>
+                  <p className="text-3xl font-bold text-purple-400">{stats.totalSeries}</p>
+                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-fuchsia-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+                  <BookOpen className="w-6 h-6 text-white" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-900/50 backdrop-blur rounded-2xl p-6 border border-purple-800/30 shadow-lg shadow-purple-900/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-purple-300/70 mb-1">Chapters Read</p>
+                  <p className="text-3xl font-bold text-fuchsia-400">{stats.totalChaptersRead}</p>
+                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-fuchsia-600 to-pink-600 rounded-xl flex items-center justify-center shadow-lg shadow-fuchsia-500/30">
+                  <TrendingUp className="w-6 h-6 text-white" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-900/50 backdrop-blur rounded-2xl p-6 border border-purple-800/30 shadow-lg shadow-purple-900/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-purple-300/70 mb-1">Completed</p>
+                  <p className="text-3xl font-bold text-green-400">{stats.completedSeries}</p>
+                </div>
+                <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/30">
+                  <CheckCircle className="w-6 h-6 text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+          <TabsList className="bg-slate-900/50 backdrop-blur border border-purple-800/30 p-1 rounded-xl">
+            {tabs.map(tab => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-fuchsia-600 data-[state=active]:text-white rounded-lg text-purple-300"
+              >
+                <tab.icon className="w-4 h-4 mr-2" />
+                {tab.label}
+                {tab.count > 0 && (
+                  <span className="ml-2 px-2 py-0.5 rounded-full text-xs bg-white/20">
+                    {tab.count}
+                  </span>
+                )}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+
+        {/* Content */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-purple-900/20 rounded-2xl h-80" />
+              </div>
+            ))}
+          </div>
+        ) : currentList.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="w-24 h-24 bg-gradient-to-br from-purple-900/30 to-fuchsia-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+              <BookOpen className="w-12 h-12 text-purple-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-purple-300 mb-2">No series here yet</h3>
+            <p className="text-purple-400/70">Start adding comics to your {activeTab.replace('_', ' ')} list!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {currentList.map((progress) => {
+              const comic = getComicById(progress.comic_id);
+              if (!comic) return null;
+              
+              return (
+                <ComicCard
+                  key={progress.id}
+                  comic={comic}
+                  userProgress={progress}
+                  onClick={() => navigate(createPageUrl(`ComicDetail?id=${comic.id}`))}
+                />
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

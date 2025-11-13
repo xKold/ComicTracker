@@ -1,0 +1,46 @@
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { BookOpen, Plus, Search } from "lucide-react";
+
+export default function EmptyState({ searchTerm, onAddComic }) {
+  if (searchTerm) {
+    return (
+      <div className="text-center py-20">
+        <div className="w-20 h-20 bg-gradient-to-br from-purple-900/30 to-fuchsia-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Search className="w-10 h-10 text-purple-400" />
+        </div>
+        <h3 className="text-2xl font-bold text-purple-300 mb-2">No results found</h3>
+        <p className="text-purple-400/70 mb-6">
+          We couldn't find any comics matching "{searchTerm}"
+        </p>
+        <Button
+          onClick={onAddComic}
+          className="bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700"
+        >
+          <Plus className="w-5 h-5 mr-2" />
+          Add This Comic
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="text-center py-20">
+      <div className="w-24 h-24 bg-gradient-to-br from-purple-900/30 to-fuchsia-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+        <BookOpen className="w-12 h-12 text-purple-400" />
+      </div>
+      <h3 className="text-3xl font-bold text-purple-300 mb-3">Start Your Collection</h3>
+      <p className="text-purple-400/70 mb-8 max-w-md mx-auto">
+        Add your favorite manga, manwha, and manhua titles to start tracking your reading progress
+      </p>
+      <Button
+        onClick={onAddComic}
+        size="lg"
+        className="bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 shadow-lg shadow-purple-500/30"
+      >
+        <Plus className="w-5 h-5 mr-2" />
+        Add Your First Comic
+      </Button>
+    </div>
+  );
+}
