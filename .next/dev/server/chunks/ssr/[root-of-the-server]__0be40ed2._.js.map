@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 10, "column": 0}, "map": {"version":3,"sources":["file:///workspaces/ComicTracker/pages/index.js"],"sourcesContent":["export default function Home() {\n  return (\n    <div>\n      <h1>Welcome to ComicTracker</h1>\n      <p>Connects to backend at /api/test</p>\n    </div>\n  );\n}\n"],"names":[],"mappings":";;;;;;AAAe,SAAS;IACtB,qBACE,qKAAC;;0BACC,qKAAC;0BAAG;;;;;;0BACJ,qKAAC;0BAAE;;;;;;;;;;;;AAGT"}}]
+}
