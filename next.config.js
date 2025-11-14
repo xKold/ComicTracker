@@ -7,6 +7,8 @@ const withPWA = require('next-pwa')({
 
 module.exports = withPWA({
   reactStrictMode: true,
-  // Explicitly tell Next.js to use webpack (required for next-pwa)
-  turbopack: false,
+  // Force webpack for production builds (required for next-pwa)
+  webpack: (config) => {
+    return config;
+  },
 });
