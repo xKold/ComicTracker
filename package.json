@@ -2,9 +2,9 @@
   "name": "comictracker",
   "version": "1.0.0",
   "private": true,
-  "scripts": {
+   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build",
+    "build": "NEXT_PRIVATE_WEBPACK=1 next build",
     "start": "next start",
     "lint": "next lint"
   },
